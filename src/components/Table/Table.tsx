@@ -1,6 +1,7 @@
 import { Table as AntdTable, Button, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import type { ColumnType } from "antd/es/table/interface";
 
 import { type DataSource } from "./type";
 import {
@@ -9,6 +10,7 @@ import {
 } from "./context/TableContext";
 import type { TableDataType } from "./models/TableData";
 import { RecordForm } from "./components/RecordForm";
+import { FilterDropdown } from "./components/FilterDropdown";
 
 interface TableProps {
   tableData: TableDataType;
@@ -66,7 +68,19 @@ export function Table({ tableData, onSelectionChange }: TableProps) {
                     : undefined
                 }
                 dataSource={dataSource}
-                columns={columns}
+                columns={columns.map((column) => {
+                  const dataIndex =
+                    "dataIndex" in column ? column.dataIndex : undefined;
+                  const filterProps = getColumnFilterProps(
+                    dataSource,
+                    dataIndex
+                  );
+
+                  return {
+                    ...column,
+                    ...filterProps,
+                  };
+                })}
               />
             </>
           );
@@ -74,4 +88,29 @@ export function Table({ tableData, onSelectionChange }: TableProps) {
       </TableContextConsumer>
     </TableContextProvider>
   );
+}
+
+function getColumnFilterProps(dataSource: DataSource[], dataIndex?: string) {
+  if (dataIndex == null) return {};
+
+  const filters = Array.from(new Set(dataSource.map((data) => data[dataIndex])))
+    .map((data) => ({
+      text: data,
+      value: data,
+    }))
+    .filter((data) => data.value != null);
+
+  type DataSourceColumnType = NonNullable<ColumnType<DataSource>>;
+
+  const filterDropdown: DataSourceColumnType["filterDropdown"] = (props) => (
+    <FilterDropdown {...props} />
+  );
+  const onFilter: DataSourceColumnType["onFilter"] = (value, record) =>
+    record[dataIndex] === value;
+
+  return {
+    filterDropdown,
+    filters,
+    onFilter,
+  };
 }
