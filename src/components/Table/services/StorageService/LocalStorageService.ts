@@ -1,17 +1,23 @@
-import type { StorageService } from "./type";
+import { AbstractStorageService } from "./AbstractStorageService";
 
-export class LocalStorageService<T extends object>
-  implements StorageService<T>
-{
+export class LocalStorageService<
+  T extends object
+> extends AbstractStorageService<T> {
   get(key: string): T {
-    const value = localStorage.getItem(key);
-    if (!value) {
-      throw new Error(`Key "${key}" not found in local storage.`);
+    const data = localStorage.getItem(key);
+    if (!data) {
+      throw new Error(`No data found for key: ${key}`);
     }
-    return JSON.parse(value) as T;
+
+    const parsedData = JSON.parse(data) as T;
+    if (!this.validator(parsedData)) {
+      throw new Error("Invalid data format in storage");
+    }
+
+    return parsedData;
   }
 
-  set(key: string, value: T): void {
+  saveData(key: string, value: T): void {
     localStorage.setItem(key, JSON.stringify(value));
   }
 

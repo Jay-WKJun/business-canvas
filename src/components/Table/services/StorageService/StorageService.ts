@@ -7,12 +7,11 @@ type StorageType = "local-storage" | "in-memory";
 const storageType: StorageType = env.storage as StorageType;
 
 export function createStorageService<T extends object>(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _?: T
+  validator: (data: T) => boolean
 ): StorageService<T> {
   if (storageType === "local-storage") {
-    return new LocalStorageService<T>();
+    return new LocalStorageService<T>(validator);
   }
 
-  return new InMemoryStorageService<T>();
+  return new InMemoryStorageService<T>(validator);
 }

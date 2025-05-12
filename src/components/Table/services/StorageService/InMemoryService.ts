@@ -1,15 +1,15 @@
-import type { StorageService } from "./type";
+import { AbstractStorageService } from "./AbstractStorageService";
 
-export class InMemoryStorageService<T extends object>
-  implements StorageService<T>
-{
+export class InMemoryStorageService<
+  T extends object
+> extends AbstractStorageService<T> {
   private storage: Record<string, T> = {};
 
   get(key: string): T {
     return this.storage[key];
   }
 
-  set(key: string, value: T): void {
+  saveData(key: string, value: T): void {
     this.storage[key] = value;
   }
 
