@@ -5,7 +5,7 @@ export const FieldSchema = z.object({
   type: z.enum(["text", "checkbox", "date", "select", "textarea"]),
   label: z.string(),
   required: z.boolean(),
-  index: z.number(),
+  schemaOrder: z.number(),
 });
 
 // value가 있는 필드 스키마 (기존 FieldSchema)
