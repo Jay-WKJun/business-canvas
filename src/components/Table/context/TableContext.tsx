@@ -79,5 +79,11 @@ export function TableContextProvider({
 }
 
 export function useTableContext() {
-  return useContext(TableContext) ?? {};
+  const context = useContext(TableContext);
+  if (!context) {
+    throw new Error(
+      "useTableContext must be used within a TableContextProvider"
+    );
+  }
+  return context;
 }
