@@ -1,9 +1,10 @@
 import { Checkbox } from "antd";
 
-import { type Field } from "../models/Field";
+import { type TableDataType } from "../models/TableData";
 import { type DataSource } from "../type";
+import { type RecordType } from "../models/Record";
 
-export function getDataSource(records: Field[][]) {
+export function getDataSource(records: RecordType[]) {
   return records.map((record, recordIndex: number) => {
     const dataSource = record.reduce<DataSource>(
       (acc, field) => {
@@ -16,8 +17,8 @@ export function getDataSource(records: Field[][]) {
   });
 }
 
-export function getColumns(record: Field[]) {
-  return record.map((field) => {
+export function getColumns(baseFieldSchema: TableDataType["schema"]) {
+  return baseFieldSchema.map((field) => {
     const standardColumn = {
       title: field.label,
       dataIndex: field.label,

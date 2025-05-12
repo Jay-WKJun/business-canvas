@@ -1,33 +1,44 @@
 import { Table as AntdTable } from "antd";
 
-import { type Record } from "./models/Record";
 import { type DataSource } from "./type";
-import { getDataSource, getColumns } from "./utils/fieldToSchema";
+import {
+  TableContextProvider,
+  TableContextConsumer,
+} from "./context/TableContext";
+import type { TableDataType } from "./models/TableData";
 
 interface TableProps {
-  records: Record[];
+  tableData: TableDataType;
   onSelectionChange?: (
     selectedRowKeys: React.Key[],
     selectedRows: DataSource[]
   ) => void;
 }
 
-export function Table({ records, onSelectionChange }: TableProps) {
-  const dataSource = getDataSource(records);
-  const columns = getColumns(records[0]);
-
+export function Table({ tableData, onSelectionChange }: TableProps) {
   return (
-    <AntdTable
-      rowSelection={
-        onSelectionChange
-          ? {
-              type: "checkbox",
-              onChange: onSelectionChange,
-            }
-          : undefined
-      }
-      dataSource={dataSource}
-      columns={columns}
-    />
+    <TableContextProvider tableData={tableData}>
+      <TableContextConsumer>
+        {(context) => {
+          if (!context) return null;
+
+          const { dataSource, columns } = context;
+          return (
+            <AntdTable
+              rowSelection={
+                onSelectionChange
+                  ? {
+                      type: "checkbox",
+                      onChange: onSelectionChange,
+                    }
+                  : undefined
+              }
+              dataSource={dataSource}
+              columns={columns}
+            />
+          );
+        }}
+      </TableContextConsumer>
+    </TableContextProvider>
   );
 }
