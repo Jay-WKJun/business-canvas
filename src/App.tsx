@@ -50,5 +50,12 @@ const record2: Field[] = [
 ];
 
 export function App() {
-  return <Table records={[record, record2]} />;
+  return (
+    <Table
+      records={[record, record2]}
+      onSelectionChange={(selectedRowKeys, selectedRows) => {
+        console.log(selectedRowKeys, selectedRows);
+      }}
+    />
+  );
 }
