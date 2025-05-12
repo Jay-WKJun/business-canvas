@@ -73,7 +73,7 @@ export function TableContextProvider({
   );
 
   const getRecord = useCallback(
-    (recordIndex: number) => {
+    (recordIndex: number): RecordType => {
       return tableDataState[recordIndex];
     },
     [tableDataState]
