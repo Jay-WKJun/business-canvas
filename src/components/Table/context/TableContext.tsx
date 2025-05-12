@@ -15,6 +15,8 @@ interface TableContextType {
   addRecord: (newRecord: RecordType) => void;
   deleteRecord: (recordIndex: number) => void;
   updateRecord: (recordIndex: number, newRecord: RecordType) => void;
+  getRecord: (recordIndex: number) => RecordType;
+  getSchema: () => TableDataType["schema"];
 }
 
 const TableContext = createContext<TableContextType | undefined>(undefined);
@@ -37,6 +39,10 @@ export function TableContextProvider({
 
   const columns = getColumns(schema);
   const dataSource = getDataSource(tableDataState);
+
+  const getSchema = useCallback(() => {
+    return schema;
+  }, [schema]);
 
   const addRecord = useCallback(
     (newRecord: RecordType) => {
@@ -66,11 +72,34 @@ export function TableContextProvider({
     [tableDataState]
   );
 
+  const getRecord = useCallback(
+    (recordIndex: number) => {
+      return tableDataState[recordIndex];
+    },
+    [tableDataState]
+  );
+
   return (
     <TableContext.Provider
       value={useMemo(
-        () => ({ dataSource, columns, addRecord, deleteRecord, updateRecord }),
-        [dataSource, columns, addRecord, deleteRecord, updateRecord]
+        () => ({
+          dataSource,
+          columns,
+          addRecord,
+          deleteRecord,
+          updateRecord,
+          getRecord,
+          getSchema,
+        }),
+        [
+          dataSource,
+          columns,
+          addRecord,
+          deleteRecord,
+          updateRecord,
+          getRecord,
+          getSchema,
+        ]
       )}
     >
       {children}
