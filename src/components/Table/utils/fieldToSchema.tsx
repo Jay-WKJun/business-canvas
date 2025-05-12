@@ -39,6 +39,7 @@ export function getColumns(baseFieldSchema: TableDataType["schema"]) {
 
       return standardColumn;
     }),
+    // 컨트롤러 컬럼
     {
       title: "",
       key: "controller",
