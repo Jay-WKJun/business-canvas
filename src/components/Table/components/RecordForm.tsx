@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Form, Input, Button, Checkbox, DatePicker, Select, Modal } from "antd";
 import dayjs from "dayjs";
 import { z } from "zod";
@@ -23,6 +23,7 @@ export const RecordForm: React.FC<RecordFormProps> = ({
   const [form] = Form.useForm();
   const { addRecord, updateRecord, getRecord, getSchema } = useTableContext();
   const isEditing = recordIndex != null;
+  const [isFormValid, setIsFormValid] = useState(false);
 
   // 스키마에서 필드 정보 추출
   const fields = useMemo(
@@ -44,6 +45,7 @@ export const RecordForm: React.FC<RecordFormProps> = ({
       }, {});
 
       form.setFieldsValue(initialValues);
+      setIsFormValid(true);
     }
 
     if (!visible) {
@@ -94,7 +96,12 @@ export const RecordForm: React.FC<RecordFormProps> = ({
         <Button key="cancel" onClick={onClose}>
           취소
         </Button>,
-        <Button key="submit" type="primary" onClick={handleSubmit}>
+        <Button
+          key="submit"
+          type="primary"
+          onClick={handleSubmit}
+          disabled={!isFormValid}
+        >
           {isEditing ? "수정" : "추가"}
         </Button>,
       ]}
@@ -120,8 +127,10 @@ export const RecordForm: React.FC<RecordFormProps> = ({
                     try {
                       // Field 스키마로 검증
                       Field.parse(createNewField(field, value));
+                      setIsFormValid(true);
                       return Promise.resolve();
                     } catch (error) {
+                      setIsFormValid(false);
                       if (error instanceof z.ZodError) {
                         return Promise.reject(error.errors[0].message);
                       }
