@@ -119,7 +119,7 @@ function renderFormField(type: FieldType["type"], label: string) {
     case "checkbox":
       return <Checkbox />;
     case "textarea":
-      return <TextArea rows={4} placeholder={`${label} 입력`} />;
+      return <TextArea rows={2} placeholder={`${label} 입력`} />;
     case "date":
       return <DatePicker style={{ width: "100%" }} />;
     case "select":
