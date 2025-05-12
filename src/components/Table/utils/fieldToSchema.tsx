@@ -25,6 +25,9 @@ export function getColumns(baseFieldSchema: TableDataType["schema"]) {
         title: field.label,
         dataIndex: field.label,
         key: field.label,
+
+        // column config
+        ellipsis: true,
       };
 
       if (field.type === "checkbox") {
