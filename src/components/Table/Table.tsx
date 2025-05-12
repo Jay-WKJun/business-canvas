@@ -54,7 +54,9 @@ export function Table({ tableData, onSelectionChange }: TableProps) {
                   onClose={() => setIsRecordFormVisible(false)}
                 />
               </div>
+
               <AntdTable
+                pagination={{ position: ["none", "none"] }}
                 rowSelection={
                   onSelectionChange
                     ? {
