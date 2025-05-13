@@ -9,7 +9,7 @@ export abstract class AbstractStorageService<T extends object>
     this.validator = validator;
   }
 
-  abstract get(key: string): T;
+  abstract get(key: string): T | null;
 
   set(key: string, value: T): void {
     if (!this.validator(value)) {

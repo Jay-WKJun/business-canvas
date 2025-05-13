@@ -7,24 +7,23 @@ import { type DataSource } from "./type";
 import {
   TableContextProvider,
   TableContextConsumer,
+  type TableContextProviderProps,
 } from "./context/TableContext";
-import type { TableDataType } from "./models/TableData";
 import { RecordForm } from "./components/RecordForm";
 import { FilterDropdown } from "./components/FilterDropdown";
 
-interface TableProps {
-  tableData: TableDataType;
+interface TableProps extends Omit<TableContextProviderProps, "children"> {
   onSelectionChange?: (
     selectedRowKeys: React.Key[],
     selectedRows: DataSource[]
   ) => void;
 }
 
-export function Table({ tableData, onSelectionChange }: TableProps) {
+export function Table({ schema, records, onSelectionChange }: TableProps) {
   const [isRecordFormVisible, setIsRecordFormVisible] = useState(false);
 
   return (
-    <TableContextProvider tableData={tableData}>
+    <TableContextProvider schema={schema} records={records}>
       <TableContextConsumer>
         {(context) => {
           if (!context) return null;

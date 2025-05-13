@@ -116,7 +116,8 @@ const tableData: TableDataType = {
 export function App() {
   return (
     <Table
-      tableData={tableData}
+      schema={tableData.schema}
+      records={tableData.records}
       onSelectionChange={(selectedRowKeys, selectedRows) => {
         console.log(selectedRowKeys, selectedRows);
       }}
