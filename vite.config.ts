@@ -12,5 +12,8 @@ export default defineConfig(({ mode }) => {
     define: {
       "process.env": env,
     },
+    test: {
+      environment: "jsdom",
+    },
   };
 });
