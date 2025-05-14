@@ -14,7 +14,7 @@ interface UseStorageServiceOptions<T extends object> {
 
 interface UseStorageServiceResult<T extends object> {
   data: T;
-  setData: (value: T) => boolean;
+  setData: (value: T | ((prev: T) => T)) => boolean;
   isInitialized: boolean;
   isLoading: boolean;
   error: Error | null;
@@ -84,7 +84,7 @@ export function useStorageService<T extends object>({
     return () => clearTimeout(timer);
   }, [key, data, storageService, isInitialized, debounceDelay]);
 
-  const setData = useCallback(
+  const _setData = useCallback(
     (value: T) => {
       if (validator(value)) {
         // 유효한 데이터라면 상태 업데이트
@@ -99,6 +99,13 @@ export function useStorageService<T extends object>({
     [validator]
   );
 
+  const setData = useCallback(
+    (value: T | ((prev: T) => T)) => {
+      const newValue = typeof value === "function" ? value(data) : value;
+      return _setData(newValue);
+    },
+    [_setData, data]
+  );
   return {
     data,
     setData,
