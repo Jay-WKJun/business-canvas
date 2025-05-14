@@ -5,19 +5,19 @@ import dayjs from "dayjs";
 describe("Field Model", () => {
   describe("FieldSchema Tests", () => {
     it("should create a valid field schema", () => {
-      const testData = {
+      const testSchema = {
         type: "text",
         label: "Name",
         required: true,
         schemaOrder: 1,
       };
 
-      const schema = FieldSchema.parse(testData);
+      const schema = FieldSchema.parse(testSchema);
 
-      expect(schema.type).toBe(testData.type);
-      expect(schema.label).toBe(testData.label);
-      expect(schema.required).toBe(testData.required);
-      expect(schema.schemaOrder).toBe(testData.schemaOrder);
+      expect(schema.type).toBe(testSchema.type);
+      expect(schema.label).toBe(testSchema.label);
+      expect(schema.required).toBe(testSchema.required);
+      expect(schema.schemaOrder).toBe(testSchema.schemaOrder);
     });
 
     it("should throw an error when required property is missing", () => {
@@ -38,6 +38,19 @@ describe("Field Model", () => {
           label: "Name",
           required: true,
           schemaOrder: 1,
+        })
+      ).toThrow();
+    });
+
+    it("should throw an error when a field schema has extra properties", () => {
+      expect(() =>
+        FieldSchema.parse({
+          type: "text",
+          label: "Name",
+          required: true,
+          schemaOrder: 1,
+          // extra property
+          value: "",
         })
       ).toThrow();
     });
