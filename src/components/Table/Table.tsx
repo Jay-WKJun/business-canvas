@@ -11,6 +11,7 @@ import {
 } from "./context/TableContext";
 import { RecordForm } from "./components/RecordForm";
 import { FilterDropdown } from "./components/FilterDropdown";
+import { css } from "@emotion/react";
 
 interface TableProps extends Omit<TableContextProviderProps, "children"> {
   onSelectionChange?: (
@@ -81,6 +82,11 @@ export function Table({ schema, records, onSelectionChange }: TableProps) {
                     ...filterProps,
                   };
                 })}
+                css={css`
+                  td.ant-table-selection-column {
+                    border-right: 1px solid #f0f0f0;
+                  }
+                `}
               />
             </>
           );
