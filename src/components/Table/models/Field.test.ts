@@ -1,23 +1,24 @@
 import { describe, it, expect } from "vitest";
 import { Field, FieldSchema } from "./Field";
 import dayjs from "dayjs";
+import {
+  textFieldTestData,
+  checkboxFieldTestData,
+  dateFieldTestData,
+  selectFieldTestData,
+  textareaFieldTestData,
+} from "./mock/mockFields";
+import { textSchemaTestData } from "./mock/mockSchemas";
 
 describe("Field Model", () => {
   describe("FieldSchema Tests", () => {
     it("should create a valid field schema", () => {
-      const testSchema = {
-        type: "text",
-        label: "Name",
-        required: true,
-        schemaOrder: 1,
-      };
+      const schema = FieldSchema.parse(textSchemaTestData);
 
-      const schema = FieldSchema.parse(testSchema);
-
-      expect(schema.type).toBe(testSchema.type);
-      expect(schema.label).toBe(testSchema.label);
-      expect(schema.required).toBe(testSchema.required);
-      expect(schema.schemaOrder).toBe(testSchema.schemaOrder);
+      expect(schema.type).toBe(textSchemaTestData.type);
+      expect(schema.label).toBe(textSchemaTestData.label);
+      expect(schema.required).toBe(textSchemaTestData.required);
+      expect(schema.schemaOrder).toBe(textSchemaTestData.schemaOrder);
     });
 
     it("should throw an error when required property is missing", () => {
@@ -25,7 +26,7 @@ describe("Field Model", () => {
         FieldSchema.parse({
           type: "text",
           label: "Name",
-          // required property is missing
+          // required 속성 누락
           schemaOrder: 1,
         })
       ).toThrow();
@@ -34,7 +35,8 @@ describe("Field Model", () => {
     it("should throw an error when field type is invalid", () => {
       expect(() =>
         FieldSchema.parse({
-          type: "invalid-type", // Invalid type
+          // 유효하지 않은 타입
+          type: "invalid-type",
           label: "Name",
           required: true,
           schemaOrder: 1,
@@ -42,43 +44,33 @@ describe("Field Model", () => {
       ).toThrow();
     });
 
-    it("should throw an error when a field schema has extra properties", () => {
+    it("extra property should be ignored", () => {
       expect(() =>
         FieldSchema.parse({
-          type: "text",
-          label: "Name",
-          required: true,
-          schemaOrder: 1,
-          // extra property
-          value: "",
+          ...textSchemaTestData,
+          // 불필요한 속성
+          extraProperty: "extra",
         })
       ).toThrow();
     });
   });
 
   describe("Text Field Tests", () => {
-    const testData = {
-      type: "text",
-      label: "Name",
-      required: true,
-      schemaOrder: 1,
-      value: "John Doe",
-    };
-
     it("should create a valid text field", () => {
-      const textField = Field.parse(testData);
+      const textField = Field.parse(textFieldTestData);
 
-      expect(textField.type).toBe(testData.type);
-      expect(textField.value).toBe(testData.value);
-      expect(textField.label).toBe(testData.label);
-      expect(textField.required).toBe(testData.required);
-      expect(textField.schemaOrder).toBe(testData.schemaOrder);
+      expect(textField.type).toBe(textFieldTestData.type);
+      expect(textField.value).toBe(textFieldTestData.value);
+      expect(textField.label).toBe(textFieldTestData.label);
+      expect(textField.required).toBe(textFieldTestData.required);
+      expect(textField.schemaOrder).toBe(textFieldTestData.schemaOrder);
     });
 
     it("should throw an error when text field exceeds character limit", () => {
       expect(() =>
         Field.parse({
-          ...testData,
+          ...textFieldTestData,
+          // 글자수 제한 초과
           value: "123456789012345678901", // 21 characters (max is 20)
         })
       ).toThrow();
@@ -86,7 +78,7 @@ describe("Field Model", () => {
 
     it("should set default value for text field when value is not provided", () => {
       const textField = Field.parse({
-        ...testData,
+        ...textFieldTestData,
         value: undefined,
       });
 
@@ -95,25 +87,18 @@ describe("Field Model", () => {
   });
 
   describe("Textarea Field Tests", () => {
-    const testData = {
-      type: "textarea",
-      label: "Introduction",
-      required: true,
-      schemaOrder: 5,
-      value: "Hello, my name is John Doe.",
-    };
-
     it("should create a valid textarea field", () => {
-      const textareaField = Field.parse(testData);
+      const textareaField = Field.parse(textareaFieldTestData);
 
-      expect(textareaField.type).toBe(testData.type);
-      expect(textareaField.value).toBe(testData.value);
+      expect(textareaField.type).toBe(textareaFieldTestData.type);
+      expect(textareaField.value).toBe(textareaFieldTestData.value);
     });
 
     it("should throw an error when textarea field exceeds character limit", () => {
       expect(() =>
         Field.parse({
-          ...testData,
+          ...textareaFieldTestData,
+          // 글자수 제한 초과
           value: "1".repeat(51), // 51 characters (max is 50)
         })
       ).toThrow();
@@ -121,7 +106,7 @@ describe("Field Model", () => {
 
     it("should set empty string as default when value is not provided", () => {
       const textareaField = Field.parse({
-        ...testData,
+        ...textareaFieldTestData,
         value: undefined,
       });
 
@@ -130,24 +115,16 @@ describe("Field Model", () => {
   });
 
   describe("Checkbox Field Tests", () => {
-    const testData = {
-      type: "checkbox",
-      label: "Agreement",
-      required: true,
-      schemaOrder: 2,
-      value: true,
-    };
-
     it("should create a valid checkbox field", () => {
-      const checkboxField = Field.parse(testData);
+      const checkboxField = Field.parse(checkboxFieldTestData);
 
-      expect(checkboxField.type).toBe(testData.type);
-      expect(checkboxField.value).toBe(testData.value);
+      expect(checkboxField.type).toBe(checkboxFieldTestData.type);
+      expect(checkboxField.value).toBe(checkboxFieldTestData.value);
     });
 
     it("should set default value to false when value is not provided", () => {
       const checkboxField = Field.parse({
-        ...testData,
+        ...checkboxFieldTestData,
         value: undefined,
       });
 
@@ -157,7 +134,8 @@ describe("Field Model", () => {
     it("should throw an error when checkbox field value is not boolean", () => {
       expect(() =>
         Field.parse({
-          ...testData,
+          ...checkboxFieldTestData,
+          // 유효하지 않은 값 (boolean 타입이 아님)
           value: "invalid value",
         })
       ).toThrow();
@@ -165,24 +143,16 @@ describe("Field Model", () => {
   });
 
   describe("Date Field Tests", () => {
-    const testData = {
-      type: "date",
-      label: "Birth Date",
-      required: true,
-      schemaOrder: 3,
-      value: "2023-01-01",
-    };
-
     it("should create a valid date field", () => {
-      const dateField = Field.parse(testData);
+      const dateField = Field.parse(dateFieldTestData);
 
-      expect(dateField.type).toBe(testData.type);
-      expect(dateField.value).toBe(testData.value);
+      expect(dateField.type).toBe(dateFieldTestData.type);
+      expect(dateField.value).toBe(dateFieldTestData.value);
     });
 
     it("should set today's date as default when value is not provided", () => {
       const dateField = Field.parse({
-        ...testData,
+        ...dateFieldTestData,
         value: undefined,
       });
 
@@ -192,21 +162,24 @@ describe("Field Model", () => {
     it("should throw an error when date format is invalid", () => {
       expect(() =>
         Field.parse({
-          ...testData,
-          value: "2023/01/01", // Invalid format (should be YYYY-MM-DD)
+          ...dateFieldTestData,
+          // 유효하지 않은 형식 (YYYY-MM-DD 형식이 아님)
+          value: "2023/01/01",
         })
       ).toThrow();
 
       expect(() =>
         Field.parse({
-          ...testData,
-          value: "01-01-2023", // Invalid format (should be YYYY-MM-DD)
+          ...dateFieldTestData,
+          // 유효하지 않은 형식 (YYYY-MM-DD 형식이 아님)
+          value: "01-01-2023",
         })
       ).toThrow();
 
       expect(() =>
         Field.parse({
-          ...testData,
+          ...dateFieldTestData,
+          // 유효하지 않은 형식 (YYYY-MM-DD 형식이 아님)
           value: "not a date",
         })
       ).toThrow();
@@ -214,24 +187,16 @@ describe("Field Model", () => {
   });
 
   describe("Select Field Tests", () => {
-    const testData = {
-      type: "select",
-      label: "Occupation",
-      required: true,
-      schemaOrder: 4,
-      value: "Developer",
-    };
-
     it("should create a valid select field", () => {
-      const selectField = Field.parse(testData);
+      const selectField = Field.parse(selectFieldTestData);
 
-      expect(selectField.type).toBe(testData.type);
-      expect(selectField.value).toBe(testData.value);
+      expect(selectField.type).toBe(selectFieldTestData.type);
+      expect(selectField.value).toBe(selectFieldTestData.value);
     });
 
     it("should set empty string as default when value is not provided", () => {
       const selectField = Field.parse({
-        ...testData,
+        ...selectFieldTestData,
         value: undefined,
       });
 
