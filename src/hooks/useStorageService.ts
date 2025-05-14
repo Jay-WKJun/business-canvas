@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { createStorageService } from "@/services/StorageService";
 
 type StorageServiceParameters<T extends object> = Parameters<
@@ -14,7 +14,7 @@ interface UseStorageServiceOptions<T extends object> {
 
 interface UseStorageServiceResult<T extends object> {
   data: T;
-  setData: React.Dispatch<React.SetStateAction<T>>;
+  setData: (value: T) => boolean;
   isInitialized: boolean;
   isLoading: boolean;
   error: Error | null;
@@ -26,7 +26,7 @@ export function useStorageService<T extends object>({
   validator,
   debounceDelay = 500,
 }: UseStorageServiceOptions<T>): UseStorageServiceResult<T> {
-  const [data, setData] = useState<T>(initialData);
+  const [data, setDataState] = useState<T>(initialData);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -45,15 +45,19 @@ export function useStorageService<T extends object>({
       if (storedData) {
         try {
           if (validator(storedData)) {
-            setData(storedData);
+            // 유효한 데이터라면 상태 업데이트
+            setDataState(storedData);
           } else {
+            // 유효하지 않은 데이터라면 초기값을 저장
             storageService.set(key, initialData);
           }
         } catch (err) {
           setError(err instanceof Error ? err : new Error("데이터 검증 실패"));
+          // 유효하지 않은 데이터라면 초기값을 저장
           storageService.set(key, initialData);
         }
       } else {
+        // key값으로 저장된 데이터가 없다면 초기값을 저장
         storageService.set(key, initialData);
       }
     } catch (err) {
@@ -70,6 +74,7 @@ export function useStorageService<T extends object>({
 
     const timer = setTimeout(() => {
       try {
+        // 디바운스 딜레이 후 저장
         storageService.set(key, data);
       } catch (err) {
         setError(err instanceof Error ? err : new Error("데이터 저장 실패"));
@@ -78,6 +83,21 @@ export function useStorageService<T extends object>({
 
     return () => clearTimeout(timer);
   }, [key, data, storageService, isInitialized, debounceDelay]);
+
+  const setData = useCallback(
+    (value: T) => {
+      if (validator(value)) {
+        // 유효한 데이터라면 상태 업데이트
+        setDataState(value);
+        return true;
+      }
+
+      // 유효하지 않은 데이터라면 에러 설정
+      setError(new Error("유효하지 않은 데이터 입니다."));
+      return false;
+    },
+    [validator]
+  );
 
   return {
     data,
