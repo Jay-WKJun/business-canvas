@@ -28,7 +28,7 @@ export function Table({ schema, records, onSelectionChange }: TableProps) {
         {(context) => {
           if (!context) return null;
 
-          const { dataSource, columns } = context;
+          const { dataSource, columns, isLoading } = context;
           return (
             <>
               <div
@@ -57,6 +57,7 @@ export function Table({ schema, records, onSelectionChange }: TableProps) {
               </div>
 
               <AntdTable
+                loading={isLoading}
                 pagination={{ position: ["none", "none"] }}
                 rowSelection={
                   onSelectionChange
