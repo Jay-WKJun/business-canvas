@@ -9,6 +9,12 @@ import { Field, type FieldType } from "../models/Field";
 
 const { TextArea } = Input;
 
+type RecordFormValue = {
+  [key: FieldType["label"]]: FieldType["value"] | dayjs.Dayjs;
+};
+
+type RecordFormValueTypes = RecordFormValue[keyof RecordFormValue];
+
 interface RecordFormProps {
   visible: boolean;
   recordIndex?: number;
@@ -20,7 +26,7 @@ export const RecordForm: React.FC<RecordFormProps> = ({
   recordIndex,
   onClose,
 }) => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<RecordFormValue>();
   const { addRecord, updateRecord, getRecord, getSchema } = useTableContext();
   const isEditing = recordIndex != null;
   const [isFormValid, setIsFormValid] = useState(false);
@@ -34,7 +40,7 @@ export const RecordForm: React.FC<RecordFormProps> = ({
   useEffect(() => {
     if (visible && isEditing) {
       // 폼 초기값 설정
-      const initialValues = fields.reduce((acc, field) => {
+      const initialValues: RecordFormValue = fields.reduce((acc, field) => {
         if (!("value" in field)) return acc;
 
         const value = field.value;
@@ -63,7 +69,7 @@ export const RecordForm: React.FC<RecordFormProps> = ({
       const value = values[field.label];
 
       try {
-        // zod의 parse 메서드로 검증
+        // Field 스키마로 검증
         return Field.parse(createNewField(field, value));
       } catch (error) {
         if (!(error instanceof z.ZodError)) throw error;
@@ -172,23 +178,29 @@ function renderFormField(type: FieldType["type"], label: string) {
   }
 }
 
+type FieldTypeWithPartialValue = Omit<FieldType, "value"> & {
+  value?: FieldType["value"];
+};
+
 function createNewField(
-  field: Omit<FieldType, "value"> & { value?: FieldType["value"] },
-  value?: string | boolean | { format: (format: string) => string }
+  field: FieldTypeWithPartialValue,
+  value?: RecordFormValueTypes
 ) {
   const isDayValue =
     field.type === "date" && value && typeof value === "object";
   const fieldValue = isDayValue
     ? value.format("YYYY-MM-DD")
-    : (value as string | boolean);
+    : (value as FieldType["value"]);
 
   return getDefaultFieldValue({
     ...field,
     value: fieldValue,
-  } as FieldType);
+  });
 }
 
-function getDefaultFieldValue(field: FieldType): FieldType {
+function getDefaultFieldValue(
+  field: FieldTypeWithPartialValue
+): FieldTypeWithPartialValue {
   if (field.value) return field;
   if (field.required) return field;
 
