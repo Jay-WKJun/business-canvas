@@ -20,7 +20,10 @@ export const Field = z.discriminatedUnion("type", [
   }),
   FieldSchema.extend({
     type: z.enum(["date"]),
-    value: z.string().default(dayjs().format("YYYY-MM-DD")),
+    value: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .default(dayjs().format("YYYY-MM-DD")),
   }),
   FieldSchema.extend({
     type: z.enum(["select"]),
