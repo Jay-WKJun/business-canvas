@@ -2,12 +2,8 @@ import React, { createContext, useContext, useMemo, useCallback } from "react";
 import { useStorageService } from "@/hooks/useStorageService";
 
 import { getDataSource, getColumns } from "../utils/fieldToSchema";
-import type { TableDataType } from "../models/TableData";
-import {
-  type RecordType,
-  RecordSchema,
-  Record as RecordModel,
-} from "../models/Record";
+import { TableData, type TableDataType } from "../models/TableData";
+import { type RecordType, RecordSchema } from "../models/Record";
 
 const STORAGE_KEY = "tableData";
 
@@ -35,21 +31,13 @@ export interface TableContextProviderProps {
 }
 
 export function TableContextProvider({
-  schema: initialSchema,
+  schema: _initialSchema,
   records: initialRecords = [],
   children,
 }: TableContextProviderProps) {
-  const tableDataValidator = useCallback(
-    ({ schema, records }: TableDataType) => {
-      try {
-        RecordSchema.safeParse(schema);
-        RecordModel.safeParse(records);
-        return true;
-      } catch {
-        return false;
-      }
-    },
-    []
+  const initialSchema = useMemo(
+    () => RecordSchema.parse(_initialSchema),
+    [_initialSchema]
   );
 
   const {
@@ -64,11 +52,17 @@ export function TableContextProvider({
       schema: initialSchema,
       records: initialRecords,
     },
-    validator: tableDataValidator,
+    validator: useCallback((tableData: TableDataType) => {
+      try {
+        TableData.parse(tableData);
+        return true;
+      } catch {
+        return false;
+      }
+    }, []),
   });
 
   const { schema, records } = tableData;
-
   const columns = getColumns(schema);
   const dataSource = getDataSource(records);
 
