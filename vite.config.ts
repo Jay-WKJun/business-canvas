@@ -8,7 +8,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [react(), tsconfigPaths()],
+    plugins: [
+      react({
+        jsxImportSource: "@emotion/react",
+      }),
+      tsconfigPaths(),
+    ],
     define: {
       "process.env": env,
     },
