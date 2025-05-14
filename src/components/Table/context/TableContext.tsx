@@ -1,15 +1,18 @@
 import React, { createContext, useContext, useMemo, useCallback } from "react";
 import { useStorageService } from "@/hooks/useStorageService";
 
-import { getDataSource, getColumns } from "../utils/fieldToSchema";
+import {
+  convertRecordsToAntdDataSource,
+  generateAntdColumnsFromSchema,
+} from "../utils/rowDataToAntdData";
 import { TableData, type TableDataType } from "../models/TableData";
 import { type RecordType, RecordSchema } from "../models/Record";
 
 const STORAGE_KEY = "tableData";
 
 interface TableContextType {
-  columns: ReturnType<typeof getColumns>;
-  dataSource: ReturnType<typeof getDataSource>;
+  columns: ReturnType<typeof generateAntdColumnsFromSchema>;
+  dataSource: ReturnType<typeof convertRecordsToAntdDataSource>;
   isInitialized: boolean;
   isLoading: boolean;
   error: Error | null;
@@ -63,8 +66,8 @@ export function TableContextProvider({
   });
 
   const { schema, records } = tableData;
-  const columns = getColumns(schema);
-  const dataSource = getDataSource(records);
+  const columns = generateAntdColumnsFromSchema(schema);
+  const dataSource = convertRecordsToAntdDataSource(records);
 
   const getSchema = useCallback(() => {
     return schema;

@@ -5,7 +5,14 @@ import { type DataSource } from "../type";
 import { type RecordType } from "../models/Record";
 import { MoreDropdownInRecord } from "../components/MoreDropdownInRecord";
 
-export function getDataSource(records: RecordType[]) {
+/**
+ * @typedef {RecordType[]} Records
+ * @typedef {DataSource[]} DataSource
+ * @description 레코드 배열을 Ant Design Table에서 사용하는 DataSource 형식으로 변환
+ * @param {Records} records 레코드 배열
+ * @returns {DataSource} DataSource 형식의 데이터 소스
+ */
+export function convertRecordsToAntdDataSource(records: RecordType[]) {
   return records.map((record, recordIndex: number) => {
     const dataSource = record.reduce<DataSource>(
       (acc, field) => {
@@ -18,7 +25,15 @@ export function getDataSource(records: RecordType[]) {
   });
 }
 
-export function getColumns(baseFieldSchema: TableDataType["schema"]) {
+/**
+ * @typedef {TableDataType["schema"]} BaseFieldSchema
+ * @description 필드 스키마를 Ant Design Table에서 사용하는 컬럼 정의로 변환
+ * @param {BaseFieldSchema} baseFieldSchema 필드 스키마
+ * @returns Ant Design Table에서 사용하는 컬럼 정의
+ */
+export function generateAntdColumnsFromSchema(
+  baseFieldSchema: TableDataType["schema"]
+) {
   return [
     ...baseFieldSchema.map((field) => {
       const standardColumn = {
