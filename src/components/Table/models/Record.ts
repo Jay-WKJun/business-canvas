@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { Field, FieldSchema } from "./Field";
 
-export const RecordSchema = z.array(FieldSchema);
+export const RecordSchema = z.array(FieldSchema).min(1);
 export type RecordSchemaType = z.infer<typeof RecordSchema>;
 
 export const Record = z.array(Field);
