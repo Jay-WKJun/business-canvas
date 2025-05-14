@@ -3,7 +3,7 @@ import { Checkbox } from "antd";
 import { type TableDataType } from "../models/TableData";
 import { type DataSource } from "../type";
 import { type RecordType } from "../models/Record";
-import { RecordMore } from "../components/RecordMore";
+import { MoreDropdownInRecord } from "../components/MoreDropdownInRecord";
 
 export function getDataSource(records: RecordType[]) {
   return records.map((record, recordIndex: number) => {
@@ -44,7 +44,7 @@ export function getColumns(baseFieldSchema: TableDataType["schema"]) {
       title: "",
       key: "controller",
       render: (_: string, record: DataSource) => (
-        <RecordMore recordIndex={record.index as number} />
+        <MoreDropdownInRecord recordIndex={record.index as number} />
       ),
     },
   ];

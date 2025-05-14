@@ -4,19 +4,15 @@ import { MoreOutlined } from "@ant-design/icons";
 import { useTableContext } from "../context/TableContext";
 import { RecordForm } from "./RecordForm";
 
-interface RecordMoreProps {
+interface MoreDropdownInRecordProps {
   recordIndex: number;
 }
 
-export const RecordMore: React.FC<RecordMoreProps> = ({ recordIndex }) => {
+export function MoreDropdownInRecord({
+  recordIndex,
+}: MoreDropdownInRecordProps) {
   const { deleteRecord } = useTableContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleMenuClick = ({ key }: { key: string }) => {
-    if (key === "delete") {
-      deleteRecord(recordIndex);
-    }
-  };
 
   const menu = (
     <Menu
@@ -34,7 +30,6 @@ export const RecordMore: React.FC<RecordMoreProps> = ({ recordIndex }) => {
           onClick: () => deleteRecord(recordIndex),
         },
       ]}
-      onClick={handleMenuClick}
     />
   );
 
@@ -51,4 +46,4 @@ export const RecordMore: React.FC<RecordMoreProps> = ({ recordIndex }) => {
       />
     </>
   );
-};
+}
